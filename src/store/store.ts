@@ -1,4 +1,4 @@
-import {combineReducers} from "redux";
+import {Action, combineReducers, Middleware} from "redux";
 import {apiSlice} from "@/store/apiSlice.ts";
 import {configureStore} from "@reduxjs/toolkit";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
@@ -8,13 +8,28 @@ const rootReducer = combineReducers({
     [apiSlice.reducerPath]: apiSlice.reducer,
     [targetCurrencySlice.reducerPath]: targetCurrencySlice.reducer
 });
+
+const loggerMiddleware: Middleware =
+    ({getState, dispatch}) =>
+        next =>
+            (action) => {
+                console.log('will dispatch', action)
+                if (action.type === targetCurrencySlice.actions.setTargetCurrency.type) {
+                    apiSlice.endpoints.getLatestListings.initiate(undefined, {forceRefetch: true});
+                }
+                const returnValue = next(action)
+                console.log('state after dispatch', getState())
+
+                return returnValue
+            }
+
 export const store = configureStore({
     reducer: {
         [apiSlice.reducerPath]: apiSlice.reducer,
         [targetCurrencySlice.reducerPath]: targetCurrencySlice.reducer
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat([apiSlice.middleware]),
+        getDefaultMiddleware().concat([apiSlice.middleware, loggerMiddleware]),
     devTools: true,
 });
 
