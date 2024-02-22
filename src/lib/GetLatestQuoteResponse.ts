@@ -1,111 +1,111 @@
 ﻿export type Platform =
     {
-        Id: number;
+            id: number;
 
-        Name: string;
+            name: string;
 
-        Symbol: string;
+            symbol: string;
 
-        Slug: string;
+            slug: string;
 
-        TokenAddress: string;
+            token_address: string;
     }
 
 export type Quote =
     {
-        Price: number;
+        price: number;
 
-        Volume24h: number;
+        volume_24h: number;
 
-        VolumeChange24h: number;
+        volume_change_24h: number;
 
-        Volume24hReported: number;
+        volume_24h_reported: number;
 
-        Volume7d: number;
+        volume_7d: number;
 
-        Volume7dReported: number;
+        volume_7d_reported: number;
 
-        Volume30d: number;
+        volume_30d: number;
 
-        Volume30dReported: number;
+        volume_30d_reported: number;
 
-        MarketCap: number;
+        market_cap: number;
 
-        MarketCapDominance: number;
+        market_cap_dominance: number;
 
-        FullyDilutedMarketCap: number;
+        fully_diluted_market_cap: number;
 
-        PercentChange1h: number;
+        percent_change_1h: number;
 
-        PercentChange24h: number;
+        percent_change_24h: number;
 
-        PercentChange7d: number;
+        percent_change_7d: number;
 
-        PercentChange30d: number;
+        percent_change_30d: number;
 
-        LastUpdated: Date;
+        last_updated: Date;
     }
 
 export type Datum =
     {
-        Id: number;
+        id: number;
 
-        Name: string;
+        name: string;
 
-        Symbol: string;
+        symbol: string;
 
-        Slug: string;
+        slug: string;
 
-        IsActive: number;
+        is_active: number;
 
-        IsFiat: number;
+        is_fiat: number;
 
-        CmcRank?: number;
+        cmc_rank?: number;
 
-        NumMarketPairs: number;
+        num_market_pairs: number;
 
-        CirculatingSupply: number;
+        circulating_supply: number;
 
-        TotalSupply: number;
+        total_supply: number;
 
-        MarketCapByTotalSupply: number;
+        market_cap_by_total_supply: number;
 
-        MaxSupply?: number;
+        max_supply?: number;
 
-        DateAdded: Date;
+        date_added: Date;
 
-        Tags: Array<string>;
+        tags: Array<string>;
 
-        Platform?: Platform;
+        platform?: Platform;
 
-        LastUpdated: Date;
+        last_updated: Date;
 
-        SelfReportedCirculatingSupply?: number;
+        self_reported_circulating_supply?: number;
 
-        SelfReportedMarketCap?: number;
+        self_reported_market_cap?: number;
 
-        Quote: { [K: string]: Quote };
+        quote: { [K: string]: Quote };
     }
 
 export type Status =
     {
-        Timestamp: Date;
+        timestamp: Date;
 
-        ErrorCode: number;
+        error_code: number;
 
-        ErrorMessage: string;
+        error_message: string;
 
-        Elapsed: number;
+        elapsed: number;
 
-        CreditCount: number;
+        credit_count: number;
 
-        Notice: string;
+        notice: string;
     }
 
 export type GetLatestQuoteResponse =
     {
-        Data: { [K: string]: Datum };
+        data: { [K: string]: Datum };
 
-        Status: Status;
+        status: Status;
     }
 

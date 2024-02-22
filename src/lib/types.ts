@@ -1,12 +1,12 @@
 export type ResponseDtoBase = {
-    Description: string;
-    StatusCode: number;
+    description: string;
+    statusCode: number;
 }
 
 export type ResponseDto<T> = ResponseDtoBase &
     {
-        TotalRecords: number;
-        Values: T[];
+        totalRecords: number;
+        values: T[];
     }
 
 export type ValueOf<T> = T[keyof T];

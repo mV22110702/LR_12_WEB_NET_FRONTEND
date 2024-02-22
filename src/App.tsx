@@ -1,6 +1,7 @@
 import {Header} from "@/components/header.tsx";
 import {store} from "@/store/store.ts";
 import {Provider} from "react-redux";
+import {Listings} from "@/components/Listings/Listings.tsx";
 
 function App() {
 
@@ -8,9 +9,7 @@ function App() {
         <Provider store={store}>
             <div>
                 <Header/>
-                <div>
-
-                </div>
+                <Listings/>
                 <div>
 
                 </div>

@@ -9,44 +9,45 @@ if (!import.meta.env.VITE_SERVER_URL || !import.meta.env.VITE_SERVER_HUB_PATH) {
 }
 const URL = import.meta.env.VITE_SERVER_URL + import.meta.env.VITE_SERVER_HUB_PATH;
 
-class Connector {
-    private connection: signalR.HubConnection;
-    static instance: Connector;
+export class Connector {
+    private static connection: signalR.HubConnection | null = null;
 
-    constructor() {
-        this.connection = new signalR.HubConnectionBuilder()
+    public static async connect() {
+        if (Connector.connection) return;
+        Connector.connection = new signalR.HubConnectionBuilder()
             .withUrl(URL)
             .withAutomaticReconnect()
             .build();
-        this.connection.start().catch(err => document.write(err));
+        await Connector.connection.start();
     }
 
-    public setListener<Name extends keyof EventNameToDtoType>(event: {
+    public static async disconnect() {
+        if (!Connector.connection) return;
+        await Connector.connection.stop();
+        Connector.connection = null;
+    }
+
+    public static setListener<Name extends keyof EventNameToDtoType>(event: {
         name: Name,
         callback: EventNameToDtoType[Name]['callback']
     }) {
-        this.connection.on(event.name, event.callback);
+        if (!Connector.connection) throw new Error("Connection is not established");
+        Connector.connection.on(event.name, event.callback);
     }
 
-    public removeListener<Name extends keyof EventNameToDtoType>(name: Name) {
-        this.connection.off(name);
+    public static removeListener<Name extends keyof EventNameToDtoType>(name: Name) {
+        if (!Connector.connection) throw new Error("Connection is not established");
+        Connector.connection.off(name);
     }
 
-    public async invoke<Name extends keyof EventNameToDtoType>(
+    public static async invoke<Name extends keyof EventNameToDtoType>(
         name: Name,
         dto: EventNameToDtoType[Name]['requestDto']
     ) {
-        return await this.connection.invoke(name, dto);
-    }
-
-    public static getInstance(): Connector {
-        if (!Connector.instance)
-            Connector.instance = new Connector();
-        return Connector.instance;
+        if (!Connector.connection) throw new Error("Connection is not established");
+        return await Connector.connection.invoke(name, dto);
     }
 }
-
-export default Connector.getInstance;
 
 export type EventOptions<T> = {
     name: string;
@@ -66,7 +67,7 @@ export type EventNameToDtoType = {
 
 export type Listing = {
     name: string;
-    quoteName:string;
+    quoteName: string;
     price: number;
 }
 
