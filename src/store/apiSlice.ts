@@ -5,6 +5,7 @@ import {Connector} from "@/lib/SignalR/Connector.ts";
 import {ResponseDto} from "@/lib/types.ts";
 import {GetLatestQuoteResponse} from "@/lib/GetLatestQuoteResponse.ts";
 import {GetLatestQuoteDto} from "@/lib/GetLatestQuoteDto.ts";
+import {GetLatestListingsDto} from "@/lib/GetLatestListingsDto.ts";
 
 export const apiSlice = createApi({
     reducerPath: 'base',
@@ -14,11 +15,11 @@ export const apiSlice = createApi({
         headers: {'Content-Type': 'application/json'}
     }),
     endpoints: (builder) => ({
-        getLatestListings: builder.query<GetLatestListingsResponse, void>({
-            query: () => ({
+        getLatestListings: builder.query<GetLatestListingsResponse, GetLatestListingsDto|undefined>({
+            query: (dto) => ({
                 method: 'POST',
                 url: ApiRoute.LISTINGS.LATEST,
-                body: {}
+                body: dto??{}
             }),
             transformResponse: (response: ResponseDto<GetLatestListingsResponse>) => {
                 return response.values[0]

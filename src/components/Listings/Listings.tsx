@@ -10,20 +10,17 @@ import {Skeleton} from "@/components/ui/skeleton.tsx";
 
 export const Listings: React.FC = () => {
     const targetCurrency = useAppSelector(selectTargetCurrency);
-    const latestListings = useGetLatestListingsQuery();
+    const latestListings = useGetLatestListingsQuery(undefined);
     const listings: Listing[] = useMemo(() => !latestListings.data?.data ? [] : latestListings.data.data.map(datum => {
-            console.log((getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase())
-            console.log(datum.quote[
-                (getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase()
-                ]?.price ?? 0)
+            console.log(datum)
             return {
                 name: datum.symbol,
                 quoteName: (getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase(),
                 price: datum.quote[
-                    (getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase()
+                    targetCurrency
                     ]?.price ?? 0,
                 lastUpdated: datum.quote[
-                    (getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase()
+                    targetCurrency
                     ]?.last_updated ?? new Date()
             }
         }
@@ -38,13 +35,12 @@ export const Listings: React.FC = () => {
             return <TableRow key={index}>
                 <TableCell className="text-center">{listing.name}</TableCell>
                 <TableCell className="text-center">{listing.quoteName}</TableCell>
-                <TableCell className="text-center">{listing.price.toFixed(2)}</TableCell>
+                <TableCell className="text-center">{listing.price.toFixed(6)}</TableCell>
                 <TableCell className="text-center">{listing.lastUpdated.toLocaleString()}</TableCell>
             </TableRow>
         });
     }
     return <div>
-        {/*{JSON.stringify(listings, null, 2)}*/}
         <Table>
             <TableHeader>
                 <TableRow>

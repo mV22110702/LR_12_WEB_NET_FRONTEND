@@ -11,10 +11,13 @@ export const Converter = () => {
     const form = useForm<{ amount: number }>({defaultValues: {amount: 1}});
     const [sourceCurrency, setSourceCurrency] = useState<CurrencyIdValues>(CurrencyId.Usd)
     const [targetCurrency, setTargetCurrency] = useState<CurrencyIdValues>(CurrencyId.Uah)
-    const [getLatestQuote, {data: latestQuoteData}] = useLazyGetLatestQuoteQuery();
+    const [getLatestQuote, {data: latestQuoteData, isLoading}] = useLazyGetLatestQuoteQuery();
     const rate = useMemo(() => (latestQuoteData?.data[sourceCurrency.toString()]?.quote[targetCurrency.toString()]?.price ?? 0), [latestQuoteData, sourceCurrency, targetCurrency])
     const [convertedAmount, setConvertedAmount] = useState<number>(0);
     useEffect(() => {
+        if(isLoading) return;
+        console.log("CONVERTER")
+        console.log('sourceCurrency', sourceCurrency, 'targetCurrency', targetCurrency)
         getLatestQuote({Id: sourceCurrency.toString(), ConvertId: targetCurrency.toString()})
     }, [sourceCurrency, targetCurrency]);
     const amount = form.watch('amount');
