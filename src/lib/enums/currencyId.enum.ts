@@ -94,3 +94,5 @@ export const CurrencyId =
         Uzs: 3572,
         Vnd: 2823
     } as const;
+
+export const CurrencyItems = Object.entries(CurrencyId).map(([key, value]) => ({key, value: value.toString()}))

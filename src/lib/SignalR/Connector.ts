@@ -1,6 +1,5 @@
 import * as signalR from "@microsoft/signalr";
 import {GetLatestQuoteDto} from "@/lib/GetLatestQuoteDto.ts";
-import {GetLatestListingsDto} from "@/lib/GetLatestListingsDto.ts";
 import {GetLatestQuoteResponse} from "@/lib/GetLatestQuoteResponse.ts";
 import {GetLatestListingsResponse} from "@/lib/GetLatestListingsResponse.ts";
 import {ResponseDto} from "@/lib/types.ts";
@@ -13,7 +12,7 @@ const URL = import.meta.env.VITE_SERVER_URL + import.meta.env.VITE_SERVER_HUB_PA
 export class Connector {
     private static connection: signalR.HubConnection | null = null;
 
-    public static async connect() {
+    public static async connect(){
         if (Connector.connection) return;
         Connector.connection = new signalR.HubConnectionBuilder()
             .withUrl(URL)
@@ -28,12 +27,12 @@ export class Connector {
         Connector.connection = null;
     }
 
-    public static setListener<Name extends keyof EventNameToDtoType>(event: {
+    public static async setListener<Name extends keyof EventNameToDtoType>(event: {
         name: Name,
         callback: EventNameToDtoType[Name]['callback']
     }) {
-        if (!Connector.connection) throw new Error("Connection is not established");
-        Connector.connection.on(event.name, event.callback);
+        if (!Connector.connection) await Connector.connect();
+        Connector.connection!.on(event.name, event.callback);
     }
 
     public static removeListener<Name extends keyof EventNameToDtoType>(name: Name) {
@@ -45,8 +44,8 @@ export class Connector {
         name: Name,
         dto: EventNameToDtoType[Name]['requestDto']
     ) {
-        if (!Connector.connection) throw new Error("Connection is not established");
-        return await Connector.connection.invoke(name, dto);
+        if (!Connector.connection) await Connector.connect();
+        return await Connector.connection!.invoke(name, dto);
     }
 }
 
@@ -57,15 +56,16 @@ export type EventOptions<T> = {
 
 export type Dtos<RQ, RS> = {
     requestDto: RQ;
-    callback: (params: RS) => void;
+    callback: (params: ResponseDto<RS>) => void;
     responseDto: RS;
 }
 
 export type EventNameToDtoType = {
-    GetLatestQuote: Dtos<GetLatestQuoteDto, GetLatestQuoteResponse>;
-    GetLatestListings: Dtos<GetLatestListingsDto, GetLatestListingsResponse>;
-    ReceiveError: Dtos<void, ResponseDto<object>>
-    SetConnectionTargetCurrency: Dtos<number,void>
+    GetLatestQuote: Dtos<GetLatestQuoteDto, void>;
+    ReceiveLatestQuote: Dtos<void, GetLatestQuoteResponse>;
+    ReceiveLatestListings: Dtos<void, GetLatestListingsResponse>;
+    ReceiveError: Dtos<void, ResponseDto<object>>;
+    SetConnectionTargetCurrency: Dtos<number, void>;
 };
 
 export type Listing = {

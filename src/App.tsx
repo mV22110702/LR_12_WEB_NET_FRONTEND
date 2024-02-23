@@ -1,4 +1,4 @@
-import {Header} from "@/components/header.tsx";
+import {Header} from "@/components/Header.tsx";
 import {store} from "@/store/store.ts";
 import {Provider} from "react-redux";
 import {Listings} from "@/components/Listings/Listings.tsx";
@@ -6,6 +6,7 @@ import {useEffect} from "react";
 import {Connector} from "@/lib/SignalR/Connector.ts";
 import {Toaster} from "@/components/ui/sonner.tsx";
 import {toast} from "sonner"
+import {Converter} from "@/components/Converter/Converter.tsx";
 
 function App() {
     useEffect(
@@ -28,10 +29,8 @@ function App() {
             <Toaster/>
             <div>
                 <Header/>
+                <Converter/>
                 <Listings/>
-                <div>
-
-                </div>
             </div>
         </Provider>
     )

@@ -3,10 +3,12 @@ import {apiSlice} from "@/store/apiSlice.ts";
 import {configureStore} from "@reduxjs/toolkit";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import {targetCurrencySlice} from "@/store/targetCurrencySlice.ts";
+import {converterSlice} from "@/store/converterSlice.ts";
 
 const rootReducer = combineReducers({
     [apiSlice.reducerPath]: apiSlice.reducer,
-    [targetCurrencySlice.reducerPath]: targetCurrencySlice.reducer
+    [targetCurrencySlice.reducerPath]: targetCurrencySlice.reducer,
+    [converterSlice.reducerPath]: converterSlice.reducer,
 });
 
 const loggerMiddleware: Middleware =
@@ -26,7 +28,8 @@ const loggerMiddleware: Middleware =
 export const store = configureStore({
     reducer: {
         [apiSlice.reducerPath]: apiSlice.reducer,
-        [targetCurrencySlice.reducerPath]: targetCurrencySlice.reducer
+        [targetCurrencySlice.reducerPath]: targetCurrencySlice.reducer,
+        [converterSlice.reducerPath]: converterSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat([apiSlice.middleware, loggerMiddleware]),

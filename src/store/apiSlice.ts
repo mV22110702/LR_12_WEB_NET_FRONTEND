@@ -3,6 +3,8 @@ import {GetLatestListingsResponse} from "@/lib/GetLatestListingsResponse.ts";
 import {ApiRoute} from "@/lib/api-route.enum.ts";
 import {Connector} from "@/lib/SignalR/Connector.ts";
 import {ResponseDto} from "@/lib/types.ts";
+import {GetLatestQuoteResponse} from "@/lib/GetLatestQuoteResponse.ts";
+import {GetLatestQuoteDto} from "@/lib/GetLatestQuoteDto.ts";
 
 export const apiSlice = createApi({
     reducerPath: 'base',
@@ -16,12 +18,9 @@ export const apiSlice = createApi({
             query: () => ({
                 method: 'POST',
                 url: ApiRoute.LISTINGS.LATEST,
-                body:{}
+                body: {}
             }),
             transformResponse: (response: ResponseDto<GetLatestListingsResponse>) => {
-                console.log('=================')
-                console.log(response.values[0])
-                console.log('=================')
                 return response.values[0]
             },
             async onCacheEntryAdded(
@@ -30,28 +29,38 @@ export const apiSlice = createApi({
             ) {
                 try {
                     await cacheDataLoaded
-                    await Connector.connect()
-                    Connector.setListener(
+                    await Connector.setListener(
                         {
-                            name: "GetLatestListings",
-                            callback: (params) => {
+                            name: "ReceiveLatestListings",
+                            callback: (dto: ResponseDto<GetLatestListingsResponse>) => {
+                                if (dto.statusCode !== 200) return
                                 updateCachedData(draft => {
-                                    draft.data = params.data
-                                    draft.status = params.status
+                                    draft.data = dto.values[0].data
+                                    draft.status = dto.values[0].status
                                 })
                             }
                         }
                     );
                 } catch {
-                    Connector.removeListener("GetLatestListings")
+                    Connector.removeListener("ReceiveLatestListings")
                     await Connector.disconnect()
                 }
                 await cacheEntryRemoved
-                Connector.removeListener("GetLatestListings")
+                Connector.removeListener("ReceiveLatestListings")
                 await Connector.disconnect()
+            },
+        }),
+        getLatestQuote: builder.query<GetLatestQuoteResponse, GetLatestQuoteDto>({
+            query: (body) => ({
+                method: 'POST',
+                url: ApiRoute.QUOTES.LATEST,
+                body
+            }),
+            transformResponse: (response: ResponseDto<GetLatestQuoteResponse>) => {
+                return response.values[0]
             },
         }),
     }),
 });
 
-export const {useGetLatestListingsQuery} = apiSlice;
+export const {useGetLatestListingsQuery, useLazyGetLatestQuoteQuery} = apiSlice;

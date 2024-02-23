@@ -24,7 +24,7 @@ export const Listings: React.FC = () => {
                     ]?.price ?? 0,
                 lastUpdated: datum.quote[
                     (getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase()
-                    ]?.last_updated ?? Date.now()
+                    ]?.last_updated ?? new Date()
             }
         }
     ), [latestListings.data?.data, targetCurrency]);
