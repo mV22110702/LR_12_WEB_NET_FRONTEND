@@ -1,39 +1,62 @@
 import {getKeyByValue} from "@/lib/utils.ts";
 import {CurrencyId} from "@/lib/enums/currencyId.enum.ts";
-import {selectTargetCurrency, targetCurrencySlice} from "@/store/targetCurrencySlice.ts";
-import {useAppDispatch, useAppSelector} from "@/store/store.ts";
+import {selectTargetCurrency} from "@/store/targetCurrencySlice.ts";
+import {useAppSelector} from "@/store/store.ts";
 import {useGetLatestListingsQuery} from "@/store/apiSlice.ts";
-import {useEffect, useMemo} from "react";
-
+import {useMemo} from "react";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
+import {Listing} from "@/lib/SignalR/Connector.ts";
+import {Skeleton} from "@/components/ui/skeleton.tsx";
 
 export const Listings: React.FC = () => {
     const targetCurrency = useAppSelector(selectTargetCurrency);
     const latestListings = useGetLatestListingsQuery();
-    console.log('latestListings.data')
-    console.log(latestListings.data)
-    const dispatch = useAppDispatch();
-    const listings = useMemo(() => !latestListings.data?.data ? [] : latestListings.data.data.map(datum => {
-            console.log('_________')
-        console.log((getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase())
+    const listings: Listing[] = useMemo(() => !latestListings.data?.data ? [] : latestListings.data.data.map(datum => {
+            console.log((getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase())
             console.log(datum.quote[
                 (getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase()
-                ]?.price??0)
+                ]?.price ?? 0)
             return {
-                name: datum.name,
+                name: datum.symbol,
                 quoteName: (getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase(),
                 price: datum.quote[
                     (getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase()
-                    ]?.price??0
+                    ]?.price ?? 0,
+                lastUpdated: datum.quote[
+                    (getKeyByValue(CurrencyId, targetCurrency) as string).toUpperCase()
+                    ]?.last_updated ?? Date.now()
             }
         }
     ), [latestListings.data?.data, targetCurrency]);
-    useEffect(() => {
-        setTimeout(()=>dispatch(targetCurrencySlice.actions.setTargetCurrency(CurrencyId.Aed)),3000);
-    }, []);
-
-    console.log("listings")
-    console.log(listings)
+    let content: React.ReactNode = (<>
+        <Skeleton className="h-4 w-[250px]"/>
+        <Skeleton className="h-4 w-[250px]"/>
+        <Skeleton className="h-4 w-[250px]"/>
+    </>)
+    if (latestListings.isSuccess) {
+        content = listings.map((listing, index) => {
+            return <TableRow key={index}>
+                <TableCell className="text-center">{listing.name}</TableCell>
+                <TableCell className="text-center">{listing.quoteName}</TableCell>
+                <TableCell className="text-center">{listing.price.toFixed(2)}</TableCell>
+                <TableCell className="text-center">{listing.lastUpdated.toLocaleString()}</TableCell>
+            </TableRow>
+        });
+    }
     return <div>
-        {JSON.stringify(listings, null, 2)}
+        {/*{JSON.stringify(listings, null, 2)}*/}
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead className="text-center">Source Currency</TableHead>
+                    <TableHead className="text-center">Target Currency</TableHead>
+                    <TableHead className='text-center'>Price</TableHead>
+                    <TableHead className='text-center'>Last Updated</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {content}
+            </TableBody>
+        </Table>
     </div>
 }

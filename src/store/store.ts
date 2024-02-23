@@ -1,4 +1,4 @@
-import {Action, combineReducers, Middleware} from "redux";
+import {combineReducers, Middleware} from "redux";
 import {apiSlice} from "@/store/apiSlice.ts";
 import {configureStore} from "@reduxjs/toolkit";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
 });
 
 const loggerMiddleware: Middleware =
-    ({getState, dispatch}) =>
+    ({getState}) =>
         next =>
             (action) => {
                 console.log('will dispatch', action)

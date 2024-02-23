@@ -36,8 +36,8 @@ export const apiSlice = createApi({
                             name: "GetLatestListings",
                             callback: (params) => {
                                 updateCachedData(draft => {
-                                    draft.Data = params.Data
-                                    draft.Status = params.Status
+                                    draft.data = params.data
+                                    draft.status = params.status
                                 })
                             }
                         }

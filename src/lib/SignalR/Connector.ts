@@ -3,6 +3,7 @@ import {GetLatestQuoteDto} from "@/lib/GetLatestQuoteDto.ts";
 import {GetLatestListingsDto} from "@/lib/GetLatestListingsDto.ts";
 import {GetLatestQuoteResponse} from "@/lib/GetLatestQuoteResponse.ts";
 import {GetLatestListingsResponse} from "@/lib/GetLatestListingsResponse.ts";
+import {ResponseDto} from "@/lib/types.ts";
 
 if (!import.meta.env.VITE_SERVER_URL || !import.meta.env.VITE_SERVER_HUB_PATH) {
     throw new Error("VITE_SERVER_URL and VITE_SERVER_HUB_PATH must be set in .env file.")
@@ -63,12 +64,15 @@ export type Dtos<RQ, RS> = {
 export type EventNameToDtoType = {
     GetLatestQuote: Dtos<GetLatestQuoteDto, GetLatestQuoteResponse>;
     GetLatestListings: Dtos<GetLatestListingsDto, GetLatestListingsResponse>;
+    ReceiveError: Dtos<void, ResponseDto<object>>
+    SetConnectionTargetCurrency: Dtos<number,void>
 };
 
 export type Listing = {
     name: string;
     quoteName: string;
     price: number;
+    lastUpdated: Date;
 }
 
 
