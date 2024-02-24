@@ -15,7 +15,7 @@ export const Converter = () => {
     const rate = useMemo(() => (latestQuoteData?.data[sourceCurrency.toString()]?.quote[targetCurrency.toString()]?.price ?? 0), [latestQuoteData, sourceCurrency, targetCurrency])
     const [convertedAmount, setConvertedAmount] = useState<number>(0);
     useEffect(() => {
-        if(isLoading) return;
+        if (isLoading) return;
         console.log("CONVERTER")
         console.log('sourceCurrency', sourceCurrency, 'targetCurrency', targetCurrency)
         getLatestQuote({Id: sourceCurrency.toString(), ConvertId: targetCurrency.toString()})
@@ -38,7 +38,7 @@ export const Converter = () => {
                     }
                 }
             ))();
-            setInterval(async (sourceCurrency: CurrencyIdValues, targetCurrency: CurrencyIdValues) => {
+            const token = setInterval(async (sourceCurrency: CurrencyIdValues, targetCurrency: CurrencyIdValues) => {
                 const s1 = '' + sourceCurrency;
                 const s2 = '' + targetCurrency;
                 console.log('s1', s1, 's2', s2)
@@ -46,6 +46,10 @@ export const Converter = () => {
                     Id: s1, ConvertId: s2
                 })
             }, 10000, sourceCurrency, targetCurrency)
+            return () => {
+                clearInterval(token)
+                Connector.removeListeners('ReceiveLatestQuote')
+            }
         }, [sourceCurrency, targetCurrency]
     );
 

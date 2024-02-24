@@ -35,7 +35,7 @@ export class Connector {
         Connector.connection!.on(event.name, event.callback);
     }
 
-    public static removeListener<Name extends keyof EventNameToDtoType>(name: Name) {
+    public static removeListeners<Name extends keyof EventNameToDtoType>(name: Name) {
         if (!Connector.connection) throw new Error("Connection is not established");
         Connector.connection.off(name);
     }

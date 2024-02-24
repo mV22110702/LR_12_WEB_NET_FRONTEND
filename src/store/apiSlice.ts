@@ -43,11 +43,11 @@ export const apiSlice = createApi({
                         }
                     );
                 } catch {
-                    Connector.removeListener("ReceiveLatestListings")
+                    Connector.removeListeners("ReceiveLatestListings")
                     await Connector.disconnect()
                 }
                 await cacheEntryRemoved
-                Connector.removeListener("ReceiveLatestListings")
+                Connector.removeListeners("ReceiveLatestListings")
                 await Connector.disconnect()
             },
         }),
